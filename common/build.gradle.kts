@@ -3,7 +3,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.3"
 }
 
-group = "com.jcanseco.dev.bank.minibank.common"
+group = "com.jcanseco.dev.bank.minibank"
 version = "1.0-SNAPSHOT"
 
 repositories {

@@ -82,15 +82,17 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return getExceptionResponseEntity(exception, HttpStatus.BAD_REQUEST, request, validationErrors);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({DomainException.class})
     public ResponseEntity<Object> handleDomainException(
             DomainException exception, WebRequest request) {
         return getExceptionResponseEntity(exception, HttpStatus.UNPROCESSABLE_ENTITY, request, Collections.singletonList(exception.getMessage()));
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Object> handleNotFoundException(
-            DomainException exception,
+            NotFoundException exception,
             WebRequest request) {
         return getExceptionResponseEntity(exception, HttpStatus.NOT_FOUND, request, Collections.singletonList(exception.getMessage()));
     }
