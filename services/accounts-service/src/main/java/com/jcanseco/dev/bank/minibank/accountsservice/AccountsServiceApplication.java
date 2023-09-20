@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
-//@ComponentScan("com.jcanseco.dev.bank.minibank.common")
+@ComponentScan("com.jcanseco.dev.bank.minibank")
 @EnableFeignClients
 @SpringBootApplication
 public class AccountsServiceApplication {
