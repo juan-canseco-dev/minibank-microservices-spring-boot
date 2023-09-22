@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -28,13 +29,13 @@ public class AccountController {
     @GetMapping("/{customerId}/details")
     @CircuitBreaker(name="accountDetailsSupport", fallbackMethod = "getAccountDetailsFallback")
     @Retry(name= "retryForAccountDetails", fallbackMethod = "getAccountDetailsFallback")
-    public ResponseEntity<AccountDetailsDto> getAccountDetails(@PathVariable int customerId) {
-        return ResponseEntity.ok(service.getAccountDetails(customerId));
+    public ResponseEntity<AccountDetailsDto> getAccountDetails(@RequestHeader("correlation-id") String correlationId, @PathVariable int customerId) {
+        return ResponseEntity.ok(service.getAccountDetails(correlationId, customerId));
     }
 
-    private ResponseEntity<AccountDetailsDto> getAccountDetailsFallback(int customerId, Throwable t) {
+    private ResponseEntity<AccountDetailsDto> getAccountDetailsFallback(@RequestHeader("correlation-id") String correlationId, int customerId, Throwable t) {
         log.error("Retry get account details", t);
-        var response = service.getAccountDetails(customerId);
+        var response = service.getAccountDetails(correlationId, customerId);
         log.info("Account details with the id {} is successful", customerId);
         return ResponseEntity.ok(response);
     }

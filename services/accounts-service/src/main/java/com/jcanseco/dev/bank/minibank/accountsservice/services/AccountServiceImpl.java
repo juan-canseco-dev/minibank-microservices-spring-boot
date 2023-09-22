@@ -36,13 +36,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDetailsDto getAccountDetails(int customerId) {
+    public AccountDetailsDto getAccountDetails(String correlationId, int customerId) {
         var account = repository
                 .findAccountByCustomerId(customerId)
                 .map(mapper::accountToAccountDto)
                 .orElseThrow(() -> new NotFoundException(String.format("The Account with the id: %d was not found.", customerId)));
-        var cards = cardsClient.getCustomerCards(customerId);
-        var loans = loansClient.getCustomerLoans(customerId);
+        var cards = cardsClient.getCustomerCards(correlationId, customerId);
+        var loans = loansClient.getCustomerLoans(correlationId, customerId);
         return new AccountDetailsDto(account, loans, cards);
     }
 }
