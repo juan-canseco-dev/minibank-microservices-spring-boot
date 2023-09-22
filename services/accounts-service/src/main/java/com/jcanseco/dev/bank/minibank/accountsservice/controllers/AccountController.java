@@ -5,6 +5,7 @@ import com.jcanseco.dev.bank.minibank.accountsservice.dtos.AccountDto;
 import com.jcanseco.dev.bank.minibank.accountsservice.services.AccountService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +23,23 @@ public class AccountController {
     }
 
     @GetMapping("/{customerId}")
+    @Timed(value = "getAccount.time", description = "Time taken to return Account")
     public ResponseEntity<AccountDto> getAccount(@PathVariable int customerId) {
-        return ResponseEntity.ok(service.getAccount(customerId));
+        log.info("getAccount with id {} starts", customerId);
+        var account = service.getAccount(customerId);
+        log.info("getAccount with id {} starts", customerId);
+        return ResponseEntity.ok(account);
     }
 
     @GetMapping("/{customerId}/details")
     @CircuitBreaker(name="accountDetailsSupport", fallbackMethod = "getAccountDetailsFallback")
     @Retry(name= "retryForAccountDetails", fallbackMethod = "getAccountDetailsFallback")
+    @Timed(value = "getAccountDetails.time", description = "Time taken to return Account Details")
     public ResponseEntity<AccountDetailsDto> getAccountDetails(@RequestHeader("correlation-id") String correlationId, @PathVariable int customerId) {
-        return ResponseEntity.ok(service.getAccountDetails(correlationId, customerId));
+        log.info("getAccountDetails with id {} starts", customerId);
+        var accountDetails = service.getAccountDetails(correlationId, customerId);
+        log.info("getAccount details with id {} ends", customerId);
+        return ResponseEntity.ok(accountDetails);
     }
 
     private ResponseEntity<AccountDetailsDto> getAccountDetailsFallback(@RequestHeader("correlation-id") String correlationId, int customerId, Throwable t) {
